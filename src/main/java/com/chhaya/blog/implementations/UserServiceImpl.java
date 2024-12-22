@@ -120,5 +120,6 @@ public class UserServiceImpl implements UserService
 	    	UserDto userDto=this.modelMapper.map(user, UserDto.class);//map(source null):source=kontya object la convert kryche ahe.and second parameter= kontya class chya object mdhe convert krych ahe.
 	    	 return userDto;                                         //we have to convert User into UserDto class.
 	    }
+	    
 		 
 }

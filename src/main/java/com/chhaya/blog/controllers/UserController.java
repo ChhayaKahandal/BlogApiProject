@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.chhaya.blog.payloads.ApiResponse;
 import com.chhaya.blog.payloads.UserDto;
 import com.chhaya.blog.services.UserService;
+
+import jakarta.validation.Valid;
+
 import com.chhaya.blog.models.User;
 
 @RestController
@@ -29,7 +32,7 @@ public class UserController
 	
      //Post:Create user
 	@PostMapping("/createUser")
-	public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto)
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto)//@Valid In usedto class we applied some validatins on bean properties or fields,and now we have to enable that validations ,thats why here we use @Valid this annotation.
 	{
 		UserDto createdUserDto=this.userService.createUser(userDto);
 		return new ResponseEntity<UserDto>(createdUserDto,
@@ -38,7 +41,7 @@ public class UserController
 	 //Put:update user
 	//here we passing "path uri variable i.e. userId,jya user che details update kryche ahe to.
 	@PutMapping("/updateUser/{userId}")
-	public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userdto,@PathVariable("userId") int uId)//userdto mdhe user cha new data yeil means update krnyasathi new data.
+	public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userdto,@PathVariable("userId") int uId)//userdto mdhe user cha new data yeil means update krnyasathi new data.
 	{
 		UserDto updatedUser=this.userService.updateUser(userdto, uId);//here we new details of user(userdto) and Id of user which we have to update with that new details.
 		return new ResponseEntity<UserDto>(updatedUser,HttpStatus.OK);
