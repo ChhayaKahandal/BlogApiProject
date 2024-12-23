@@ -1,10 +1,16 @@
 package com.chhaya.blog.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +36,13 @@ public class User
      private String about;
 	
 	
-	 
+   //here making the one to many relationship between user and post(one user has multiple post)
+ 	@OneToMany(mappedBy = "user",cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+ 	//mappedBy = "user"  ->In post table on which column we have to mapped."user" is column in post tabel.
+ 	//fetch=FetchType.LAZY  means parent delet kiya to child delet nhi hoga.
+ 	//cascade=CascadeType.ALL means when we delet parent then automaticall child will delet.and when we add parent then child will automatially get saved.
+ 	private List<Post> posts=new ArrayList<>();
+ 	 
          
          
          
