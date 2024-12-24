@@ -2,6 +2,8 @@ package com.chhaya.blog.models;
 
 import java.util.Date;
 
+import com.chhaya.blog.payloads.UserDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
