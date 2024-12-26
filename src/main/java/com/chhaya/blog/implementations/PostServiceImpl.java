@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import com.chhaya.blog.models.Post;
 import com.chhaya.blog.models.Category;
 import com.chhaya.blog.models.User;
 import com.chhaya.blog.payloads.PostDto;
+import com.chhaya.blog.payloads.PostResponse;
 import com.chhaya.blog.repositories.PostRepo;
 import com.chhaya.blog.repositories.UserRepo;
 import com.chhaya.blog.repositories.CategoryRepo;
@@ -84,12 +86,24 @@ public class PostServiceImpl  implements PostService
 
 	//here we fetching all post
 	@Override
-	public List<PostDto> getAllPost(Integer pageNumber,Integer pageSize) 
+	public PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy,String sortDir) 
 	{
 		//Pagination logic
-		 // int pageSize=5;
-		 // int pageNumber=1;
-		  Pageable p=PageRequest.of(pageNumber, pageSize);
+		  //Pageable p=PageRequest.of(pageNumber, pageSize);
+	
+		//by tornary operator
+		Sort sort=(sortDir.equalsIgnoreCase("asc"))?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+		/*Sort sort=null;
+		if(sortDir.equalsIgnoreCase("asc"))
+		{
+			sort=Sort.by(sortBy).ascending();
+		}
+		else
+		{
+			sort=Sort.by(sortBy).descending();
+		}*/
+		  Pageable p=PageRequest.of(pageNumber,pageSize,sort);//here we passing object of sort-> Sort.by(sortBy)
+		                                                             //Sort.by(sortBy).descending() ->direct as pn pass kru shkto.kinva separate varible use krun pass kru shkto.
 		  Page<Post> pagePost=this.postRepo.findAll(p);
 		  List<Post> allposts=pagePost.getContent();
 		  
@@ -97,7 +111,16 @@ public class PostServiceImpl  implements PostService
 		//List<Post> allposts=this.postRepo.findAll();
 		List<PostDto> allPostDtos=allposts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
 		
-		return allPostDtos;
+		
+		PostResponse  postResponse =new PostResponse();
+		postResponse.setContent(allPostDtos);//pageResponse class mdhe content he list ahe mhnun ithe list pass keli.
+		postResponse.setPageNumber(pagePost.getNumber());
+		postResponse.setPageSize(pagePost.getSize());
+		postResponse.setTotalElements(pagePost.getTotalElements());
+		postResponse.setTotalPages(pagePost.getTotalPages());
+		postResponse.setLastPage(pagePost.isLast());
+		
+		return postResponse;
 	}
 
 	//here we getting one post by id
@@ -133,11 +156,13 @@ public class PostServiceImpl  implements PostService
 	}
     
 	
+	//seraching by title
 	@Override
 	public List<PostDto> searchPost(String keyword)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		List<Post> posts=this.postRepo.findByTitleContaining(keyword);
+		List<PostDto> postDtos=posts.stream().map((post)->this.modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+		return postDtos;
 	}
 	
 	

@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chhaya.blog.config.AppContstantsValue;
 import com.chhaya.blog.implementations.PostServiceImpl;
 import com.chhaya.blog.models.Post;
 import com.chhaya.blog.payloads.ApiResponse;
 import com.chhaya.blog.payloads.PostDto;
+import com.chhaya.blog.payloads.PostResponse;
 import com.chhaya.blog.services.PostService;
 
 @RestController
@@ -35,6 +37,9 @@ public class PostController
   
   //create
   //http://localhost:9090/api/posts/user/1/category/4/posts->means 1no cha user 4no chya categpry mdhe post create krtoy.
+  /*
+   *http://localhost:9090/api/posts/page?pageNumber=0&pageSize=5&sortBy=title
+   */
   @PostMapping("/user/{userId}/category/{categoryId}/posts")//konta user ha kontya category chya under post create krtoy.
   public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,@PathVariable("userId") Integer uId,@PathVariable("categoryId") Integer cId)
   {
@@ -62,15 +67,20 @@ public class PostController
   
   
   //get all post
-  @GetMapping("/")
-  public ResponseEntity<List<PostDto>> getAllPost(
-		         @RequestParam(value="pageNumber",defaultValue="1",required=false) Integer pageNo,
-		         @RequestParam(value="pageSize",defaultValue="5",required=false) Integer pageSize)
+  // http://localhost:9090/api/posts/page?pageNumber=1&pageSize=5
+  @GetMapping("/page")
+  public ResponseEntity<PostResponse> getAllPost(
+		         @RequestParam(value="pageNumber",defaultValue=AppContstantsValue.PAGE_NUMBER,required=false) Integer pageNo,
+		         @RequestParam(value="pageSize",defaultValue=AppContstantsValue.PAGE_SIZE,required=false) Integer pageSize,
+		         @RequestParam(value="sortBy",defaultValue=AppContstantsValue.SORT_BY ,required=false) String sortBy,
+		         @RequestParam(value="sortDirection",defaultValue=AppContstantsValue.SORT_DIRECTION,required=false) String sortDirection)
+  //defaultValue="0" ->first we write harcoded values like this.now for best practice we can use this values using class.
+  //@RequestParam(value="pageNumber",defaultValue="0",required=false) Integer pageNo,->this "pageNumber" is pass in url,jar apan value dili nhi tr to default value 0 gheil,ani reuired is false means url mdhe parameter dya kinva nka deu.
   {
-	  
-	  List<PostDto> posts=this.postService.getAllPost(pageNo,pageSize);
+	  PostResponse postResponse =this.postService.getAllPost(pageNo, pageSize,sortBy,sortDirection);
+	  //List<PostDto> posts=this.postService.getAllPost(pageNo,pageSize);
 	 // List<PostDto> posts=this.postService.getAllPost();
-	  return new ResponseEntity<List<PostDto>>(posts,HttpStatus.OK);
+	  return new ResponseEntity<PostResponse> (postResponse,HttpStatus.OK);
   }
   
   
@@ -99,6 +109,14 @@ public class PostController
   {
 	  PostDto updatepost=this.postService.updatePost(postdto, pId);
 	  return new ResponseEntity<PostDto>(updatepost,HttpStatus.OK);
+  }
+  
+  //search by title name
+  @GetMapping("/search/{keyword}")
+  public ResponseEntity<List<PostDto>> searchPostByTitlle(@PathVariable("keyword") String keword)
+  {
+	 List<PostDto> result=this.postService.searchPost(keword);
+	  return new ResponseEntity<List<PostDto>>(result,HttpStatus.OK) ;
   }
   
  

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.chhaya.blog.models.Post;
 import com.chhaya.blog.payloads.PostDto;
+import com.chhaya.blog.payloads.PostResponse;
 
 public interface PostService
 {
@@ -17,8 +18,9 @@ public interface PostService
 	void deletePost(Integer postId);
 	
 	//get  all post
-	List<PostDto>getAllPost(Integer pageNumber,Integer pageSize );
-	
+	//List<PostDto>getAllPost(Integer pageNumber,Integer pageSize );
+	//get post by all details
+	PostResponse getAllPost(Integer pageNumber,Integer pageSize,String sortBy,String sortDir);
 	
 	
 	//get single post
